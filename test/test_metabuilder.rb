@@ -30,13 +30,16 @@ class MetaBuilderTest < Test::Unit::TestCase
     assert_equal Person, @builder.instance_variable_get("@model")
   end
 
-  def test_should_be_able_te_create_a_single_property_setter_and_getter
-    assert_respond_to @builder, :name
+  def test_should_be_able_te_create_a_single_property_setter
     assert_respond_to @builder, :name=
-    assert_respond_to @builder, :age
     assert_respond_to @builder, :age=
-    assert_respond_to @builder, :job
     assert_respond_to @builder, :job=
+  end
+
+  def test_should_be_able_te_create_a_single_property_getter
+    assert_respond_to @builder, :name
+    assert_respond_to @builder, :age
+    assert_respond_to @builder, :job
   end
 
   def test_should_be_able_to_set_constraints_to_a_setter
