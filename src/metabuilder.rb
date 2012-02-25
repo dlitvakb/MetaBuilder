@@ -1,3 +1,9 @@
+class Object
+  def singleton_class
+    class << self; self; end
+  end
+end
+
 module MetaBuilder
   def model klass
     @model ||= klass
@@ -16,7 +22,7 @@ module MetaBuilder
   end
 
   def property name, options=Hash.new
-    (class << self; self; end).class_eval do
+    singleton_class.class_eval do
       define_method "validate_#{name}" do |value|
         _validate_type value, options[:type] if options.key? :type
         _validate_ranged value, options[:one_of] if options.key? :one_of
@@ -57,9 +63,8 @@ module MetaBuilder
     result_model = @model.new
     _building_properties.each_pair { |name, value|
       result_model.instance_eval do
-        selfclass = (class << self; self; end)
         instance_variable_set("@#{name}", value)
-        selfclass.send :define_method, name.to_sym do
+        singleton_class.send :define_method, name.to_sym do
           instance_variable_get("@#{name}")
         end
       end
