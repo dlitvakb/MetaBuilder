@@ -13,6 +13,15 @@ class PersonBuilder
     property :name
     property :age, :type => Integer
     property :job, :one_of => ["doctor", "musician"]
+    property :height, :validates => Proc.new { |value|
+      first_part = value.split("\"").first.to_i
+      second_part = value.split("\"").last.gsub("'","").to_i
+
+      first_part_ok = first_part >= 0
+      second_part_ok = (0..12).member? second_part
+
+      first_part_ok and second_part_ok
+    }
   end
 end
 
@@ -27,7 +36,7 @@ class MetaBuilderTest < Test::Unit::TestCase
   end
 
   def test_should_be_able_to_add_a_model
-    assert_equal Person, @builder.instance_variable_get("@model")
+    assert_equal Person, @builder.instance_variable_get("@_model")
   end
 
   def test_should_be_able_te_create_a_single_property_setter
@@ -57,6 +66,15 @@ class MetaBuilderTest < Test::Unit::TestCase
 
     assert_raise OptionError do
       @builder.job = "verdulero"
+    end
+  end
+
+  def test_should_be_able_to_do_custom_validations
+    @builder.height = "6\"1'"
+    assert_equal "6\"1'", @builder.height
+
+    assert_raise ValidationError do
+      @builder.height = "6\"13'"
     end
   end
 
