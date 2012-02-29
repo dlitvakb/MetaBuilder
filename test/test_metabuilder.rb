@@ -22,6 +22,8 @@ class PersonBuilder
 
       first_part_ok and second_part_ok
     }
+
+    required :name
   end
 end
 
@@ -52,6 +54,7 @@ class MetaBuilderTest < Test::Unit::TestCase
   end
 
   def test_should_be_able_to_set_constraints_to_a_setter
+    @builder.name = "pepe"
     @builder.age = 21
     assert_equal 21, @builder.age
 
@@ -78,11 +81,29 @@ class MetaBuilderTest < Test::Unit::TestCase
     end
   end
 
+  def test_should_not_build_if_required_property_is_nil
+    assert_equal nil, @builder.name
+
+    assert_raise RequiredFieldError do
+      @builder.build
+    end
+  end
+
+  def test_should_be_able_to_set_required_fields
+    @builder.name = "pepe"
+    assert_equal "pepe", @builder.name
+
+    assert_raise RequiredFieldError do
+      @builder.name = nil
+    end
+  end
+
   def test_should_respond_to_build
     assert_respond_to @builder, :build
   end
 
   def test_build_should_return_a_model_instance
+    @builder.name = "pepe"
     assert @builder.build.is_a?(Person), "should be a Person"
   end
 
