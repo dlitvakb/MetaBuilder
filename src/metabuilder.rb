@@ -1,9 +1,3 @@
-class Object
-  def singleton_class
-    class << self; self; end
-  end
-end
-
 module MetaBuilder
   def model klass
     @_model ||= klass
